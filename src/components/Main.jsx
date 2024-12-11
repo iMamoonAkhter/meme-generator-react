@@ -4,50 +4,69 @@ const Main = () => {
   const [meme, setMeme] = React.useState({
     topText: "",
     bottomText: "",
-    imageUrl: ""
+    imageUrl: "http://i.imgflip.com/1bij.jpg" // Default image URL
   });
-  const [allMemes, setAllMemes] = React.useState([])
-  React.useEffect(()=>{
-    fetch('https://api.imgflip.com/get_memes')
-    .then(res => res.json())
-    .then(data => setAllMemes(data.data.memes))
-  },[])
 
-  function handleChange(e){
-    const {value, name} = e.currentTarget;
-    console.log(name)
-    setMeme(prevMeme => ({
-      ...prevMeme,
-      [name]: value,
-    }))
+  const [text, setText] = React.useState({
+    topText: "",
+    bottomText: ""
+  });
+
+  const [allMemes, setAllMemes] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch("https://api.imgflip.com/get_memes")
+      .then((res) => res.json())
+      .then((data) => setAllMemes(data.data.memes));
+  }, []);
+
+  function handleChange(e) {
+    const { value, name } = e.currentTarget;
+    setText((prevText) => ({
+      ...prevText,
+      [name]: value
+    }));
   }
 
-  const getMemeImage = ()=>{
+  const getMemeImage = () => {
     const randomNumber = Math.floor(Math.random() * allMemes.length);
     const newMemeUrl = allMemes[randomNumber].url;
-    console.log("URL: ", newMemeUrl);
-    setMeme(prev => ({
-      ...prev,
+    
+    // Update the meme with the new image and the text from the input fields
+    setMeme({
+      topText: text.topText,
+      bottomText: text.bottomText,
       imageUrl: newMemeUrl
-    }))
-  }
-  
+    });
+  };
 
   return (
     <main>
       <div className="form">
         <label>
           Top Text
-          <input type="text" placeholder="One does not simply" name="topText" onChange={handleChange} value={meme.topText} />
+          <input
+            type="text"
+            placeholder="One does not simply"
+            name="topText"
+            onChange={handleChange}
+            value={text.topText} // Use text for the input fields
+          />
         </label>
         <label>
           Bottom Text
-          <input type="text" placeholder="Walk into Mordor" name="bottomText" onChange={handleChange} value={meme.bottomText} />
+          <input
+            type="text"
+            placeholder="Walk into Mordor"
+            name="bottomText"
+            onChange={handleChange}
+            value={text.bottomText} // Use text for the input fields
+          />
         </label>
         <button onClick={getMemeImage}>Get a new meme image 🖼</button>
       </div>
       <div className="meme">
-        <img src={meme.imageUrl} />
+        <img src={meme.imageUrl} alt="Meme" />
         <span className="top">{meme.topText}</span>
         <span className="bottom">{meme.bottomText}</span>
       </div>
